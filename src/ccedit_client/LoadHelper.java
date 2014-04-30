@@ -7,8 +7,6 @@
 package ccedit_client;
 
 import java.io.File;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -29,12 +27,14 @@ public class LoadHelper extends Thread{
                 lv.setVisible(false);
             }
         }
-        if(!new File(System.getProperty("user.home") + "/yenon/CCEdit_Client/CCEdit.cfg").isFile()){
+        if(!new File(System.getProperty("user.home") + "/yenon/CCEdit_Client/Server.cfg").isFile()){
             lv.setLoadingStatus(5,"Waiting for user input...");
             InputServerdata is = new InputServerdata();
             is.setVisible(true);
             is.waitForFinish();
         }
         lv.setLoadingStatus(10,"Downloading command file...");
+        EditFrame.main(new String[0]);
+        lv.dispose();
     }
 }
