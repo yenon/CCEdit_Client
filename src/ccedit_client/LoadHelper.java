@@ -23,7 +23,7 @@ public class LoadHelper extends Thread{
         boolean ok;
         if(!new File(System.getProperty("user.home") + "/yenon/CCEdit_Client").isDirectory()){
             if(!new File(System.getProperty("user.home") + "/yenon/CCEdit_Client").mkdirs()){
-                ErrorFrame.main("Could not create /yenon/CCEdit_Client in your user-home");
+                ErrorFrame.main("Could not create /yenon/CCEdit_Client in your user-home",true);
                 lv.setVisible(false);
             }
         }

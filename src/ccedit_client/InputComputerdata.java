@@ -112,7 +112,7 @@ public class InputComputerdata extends javax.swing.JFrame {
                 o.notify();
             }
         }else{
-            ErrorFrame.main(u.getResponse());
+            ErrorFrame.main(u.getResponse(),false);
         }
     }//GEN-LAST:event_jButton1ActionPerformed
 

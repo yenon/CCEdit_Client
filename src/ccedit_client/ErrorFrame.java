@@ -40,7 +40,7 @@ public class ErrorFrame extends javax.swing.JFrame {
 
         jLabel1.setText(" ");
 
-        jButton1.setText("Exit");
+        jButton1.setText("custom text here");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton1ActionPerformed(evt);
@@ -71,19 +71,28 @@ public class ErrorFrame extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
     static String err;
+    static boolean stop;
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        if(stop){
         System.exit(1);
+        }
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void startup(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_startup
         jLabel1.setText(err);
+        if(stop){
+            jButton1.setText("Exit");
+        }else{
+            jButton1.setText("OK");
+        }
     }//GEN-LAST:event_startup
 
     /**
-     * @param _err
+     * @param _stop * @param _err
      */
-    public static void main(String _err) {
+    public static void main(String _err,boolean _stop) {
         err=_err;
+        stop=_stop;
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
          * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
