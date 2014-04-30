@@ -3,9 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package ccedit_client;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -86,40 +89,37 @@ public class InputComputerdata extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-    
+
     final static Object o = new Object();
+    static EditFrame ef;
 
-    public void waitForFinish() {
-        boolean ok = false;
-
-        synchronized (o) {
-            while (!ok) {
-                try {
-                    o.wait();
-                    ok = true;
-                } catch (InterruptedException ex) {
-                    Logger.getLogger(LoaderView.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-        }
-    }
-    
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        Uploader u = new Uploader("ls",jTextField1.getText(),"",jTextField2.getText(),"");
+        Uploader u = new Uploader("ls", jTextField1.getText(), "", jTextField2.getText(), "");
         u.start();
-        if (!(u.getResponse().startsWith("Error:")||u.getResponse().startsWith("Exception:"))){
-            synchronized(o){
-                o.notify();
+        if (!(u.getResponse().startsWith("Error:") || u.getResponse().startsWith("Exception:"))) {
+            try {
+                FileOutputStream fos = new FileOutputStream(new File(System.getProperty("user.home") + "/yenon/CCEdit_Client/Computer.cfg"));
+                Properties settings = new Properties();
+                settings.setProperty("ID",jTextField1.getText());
+                settings.setProperty("Password",jTextField2.getText());
+                settings.store(fos, null);
+                fos.close();
+                ef.updatePC();
+                this.dispose();
+
+            } catch (IOException ex) {
+                ex.printStackTrace();
             }
-        }else{
-            ErrorFrame.main(u.getResponse(),false);
+        } else {
+            ErrorFrame.main(u.getResponse(), false);
         }
     }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
-     * @param args the command line arguments
+     * @param _ef
      */
-    public static void main(String args[]) {
+    public static void main(EditFrame _ef) {
+        ef=_ef;
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
@@ -130,16 +130,21 @@ public class InputComputerdata extends javax.swing.JFrame {
                 if ("Nimbus".equals(info.getName())) {
                     javax.swing.UIManager.setLookAndFeel(info.getClassName());
                     break;
+
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(InputComputerdata.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(InputComputerdata.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(InputComputerdata.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(InputComputerdata.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(InputComputerdata.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(InputComputerdata.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(InputComputerdata.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(InputComputerdata.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
 

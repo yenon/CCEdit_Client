@@ -89,11 +89,13 @@ public class EditFrame extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
+    
+    public void updatePC(){
+        
+    }
+    
     private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
-        InputComputerdata icd = new InputComputerdata();
-        icd.main(new String[0]);
-        //icd.waitForFinish();
+        InputComputerdata.main(this);
     }//GEN-LAST:event_jMenuItem1ActionPerformed
 
     /**
