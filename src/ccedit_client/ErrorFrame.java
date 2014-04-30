@@ -74,7 +74,9 @@ public class ErrorFrame extends javax.swing.JFrame {
     static boolean stop;
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         if(stop){
-        System.exit(1);
+            System.exit(1);
+        }else{
+            this.dispose();
         }
     }//GEN-LAST:event_jButton1ActionPerformed
 
@@ -88,6 +90,7 @@ public class ErrorFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_startup
 
     /**
+     * @param _err
      * @param _stop * @param _err
      */
     public static void main(String _err,boolean _stop) {
