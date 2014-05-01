@@ -39,7 +39,7 @@ public class EditFrame extends javax.swing.JFrame {
         jSplitPane1 = new javax.swing.JSplitPane();
         jScrollPane2 = new javax.swing.JScrollPane();
         jTextPane1 = new javax.swing.JTextPane();
-        jScrollPane1 = new javax.swing.JScrollPane();
+        jScrollPane3 = new javax.swing.JScrollPane();
         jTree1 = new javax.swing.JTree();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
@@ -58,23 +58,19 @@ public class EditFrame extends javax.swing.JFrame {
 
         jSplitPane1.setRightComponent(jScrollPane2);
 
-        javax.swing.tree.DefaultMutableTreeNode treeNode1 = new javax.swing.tree.DefaultMutableTreeNode("JTree");
-        javax.swing.tree.DefaultMutableTreeNode treeNode2 = new javax.swing.tree.DefaultMutableTreeNode("Click 'File/Set computer' to");
-        treeNode1.add(treeNode2);
-        treeNode2 = new javax.swing.tree.DefaultMutableTreeNode("view it's files");
-        treeNode1.add(treeNode2);
+        javax.swing.tree.DefaultMutableTreeNode treeNode1 = new javax.swing.tree.DefaultMutableTreeNode("root");
         jTree1.setModel(new javax.swing.tree.DefaultTreeModel(treeNode1));
         jTree1.setRootVisible(false);
         jTree1.addTreeWillExpandListener(new javax.swing.event.TreeWillExpandListener() {
             public void treeWillCollapse(javax.swing.event.TreeExpansionEvent evt)throws javax.swing.tree.ExpandVetoException {
             }
             public void treeWillExpand(javax.swing.event.TreeExpansionEvent evt)throws javax.swing.tree.ExpandVetoException {
-                loadNewFold(evt);
+                jTree1TreeWillExpand(evt);
             }
         });
-        jScrollPane1.setViewportView(jTree1);
+        jScrollPane3.setViewportView(jTree1);
 
-        jSplitPane1.setLeftComponent(jScrollPane1);
+        jSplitPane1.setLeftComponent(jScrollPane3);
 
         jMenu1.setText("File");
 
@@ -194,7 +190,7 @@ public class EditFrame extends javax.swing.JFrame {
         updatePC();
     }//GEN-LAST:event_startup
 
-    private void loadNewFold(javax.swing.event.TreeExpansionEvent evt)throws javax.swing.tree.ExpandVetoException {//GEN-FIRST:event_loadNewFold
+    private void jTree1TreeWillExpand(javax.swing.event.TreeExpansionEvent evt)throws javax.swing.tree.ExpandVetoException {//GEN-FIRST:event_jTree1TreeWillExpand
         DefaultMutableTreeNode selectedNode = ((DefaultMutableTreeNode) evt.getPath().getLastPathComponent());
         if (selectedNode.getChildCount() == 1 && "Loading contents...".equals(selectedNode.getChildAt(0).toString())) {
             int i = 0;
@@ -217,6 +213,7 @@ public class EditFrame extends javax.swing.JFrame {
                 String in[] = u.getResponse().split("\n");
                 DefaultMutableTreeNode file;
                 selectedNode.removeAllChildren();
+                i = 0;
                 while (i < in.length) {
                     if (in[i].startsWith("(dir)")) {
                         in[i] = in[i].substring(5);
@@ -236,9 +233,12 @@ public class EditFrame extends javax.swing.JFrame {
                     }
                     i++;
                 }
+                if (selectedNode.getChildCount()==0){
+                    selectedNode.add(new DefaultMutableTreeNode("<empty directory>"));
+                }
             }
         }
-    }//GEN-LAST:event_loadNewFold
+    }//GEN-LAST:event_jTree1TreeWillExpand
 
     /**
      * @param args the command line arguments
@@ -280,8 +280,8 @@ public class EditFrame extends javax.swing.JFrame {
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItem1;
-    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JSplitPane jSplitPane1;
     private javax.swing.JTextPane jTextPane1;
     private javax.swing.JTree jTree1;
