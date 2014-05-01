@@ -108,6 +108,9 @@
                 </Property>
                 <Property name="rootVisible" type="boolean" value="false"/>
               </Properties>
+              <Events>
+                <EventHandler event="treeWillExpand" listener="javax.swing.event.TreeWillExpandListener" parameters="javax.swing.event.TreeExpansionEvent" handler="loadNewFold"/>
+              </Events>
             </Component>
           </SubComponents>
         </Container>

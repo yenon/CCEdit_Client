@@ -11,6 +11,8 @@ import java.io.IOException;
 import java.util.Properties;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeNode;
+import javax.swing.tree.TreePath;
 
 /**
  *
@@ -63,6 +65,13 @@ public class EditFrame extends javax.swing.JFrame {
         treeNode1.add(treeNode2);
         jTree1.setModel(new javax.swing.tree.DefaultTreeModel(treeNode1));
         jTree1.setRootVisible(false);
+        jTree1.addTreeWillExpandListener(new javax.swing.event.TreeWillExpandListener() {
+            public void treeWillCollapse(javax.swing.event.TreeExpansionEvent evt)throws javax.swing.tree.ExpandVetoException {
+            }
+            public void treeWillExpand(javax.swing.event.TreeExpansionEvent evt)throws javax.swing.tree.ExpandVetoException {
+                loadNewFold(evt);
+            }
+        });
         jScrollPane1.setViewportView(jTree1);
 
         jSplitPane1.setLeftComponent(jScrollPane1);
@@ -103,6 +112,8 @@ public class EditFrame extends javax.swing.JFrame {
 
     private String pc, passwd, ip;
     private int port;
+    private DefaultMutableTreeNode root;
+    private DefaultMutableTreeNode dirmsg = new DefaultMutableTreeNode("Loading contents...");
 
     public void updatePC() {
         try {
@@ -111,37 +122,42 @@ public class EditFrame extends javax.swing.JFrame {
                 Properties p = new Properties();
                 p.load(fr);
                 if (p.containsKey("ID") && p.containsKey("Password")) {
-                    pc=p.getProperty("ID");
-                    passwd=p.getProperty("Password");
-                    Uploader u = new Uploader("ls",pc,"",passwd,"");
+                    pc = p.getProperty("ID");
+                    passwd = p.getProperty("Password");
+                    Uploader u = new Uploader("ls", pc, "", passwd, "");
                     u.start();
-                    if(u.getResponse().startsWith("Error: ") || u.getResponse().startsWith("Exception: ")){
-                        ErrorFrame.main(u.getResponse(),false);
-                    }else{
-                        DefaultMutableTreeNode root = new DefaultMutableTreeNode("");
+                    if (u.getResponse().startsWith("Error: ") || u.getResponse().startsWith("Exception: ")) {
+                        ErrorFrame.main(u.getResponse(), false);
+                    } else {
+                        root = new DefaultMutableTreeNode("");
                         DefaultMutableTreeNode dir;
-                        DefaultMutableTreeNode dirmsg = new DefaultMutableTreeNode("Loading contents...");
+
                         System.out.println(u.getResponse());
                         String in[] = u.getResponse().split("\n");
-                        int i=0;
-                        while(i<in.length){
-                            if(in[i].startsWith("(dir)")){
-                                in[i]=in[i].substring(5);
+                        int i = 0;
+                        while (i < in.length) {
+                            if (in[i].startsWith("(dir)")) {
+                                in[i] = in[i].substring(5);
                                 dir = new DefaultMutableTreeNode(in[i]);
                                 dir.add(dirmsg);
-                                root.add(dir);
-                            }else{
-                                in[i]=in[i].substring(6);
-                                dir = new DefaultMutableTreeNode(in[i]);
                                 root.add(dir);
                             }
                             System.out.println(in[i]);
                             i++;
                         }
+                        i = 0;
+                        while (i < in.length) {
+                            if (in[i].startsWith("(file)")) {
+                                in[i] = in[i].substring(6);
+                                dir = new DefaultMutableTreeNode(in[i]);
+                                root.add(dir);
+                            }
+                            i++;
+                        }
                         jTree1.setModel(new DefaultTreeModel(root));
                     }
-                }else{
-                    ErrorFrame.main("Please set your Computer-ID and password\nunder 'File/Set computer'.",false);
+                } else {
+                    ErrorFrame.main("Please set your Computer-ID and password under 'File/Set computer'.", false);
                 }
                 fr.close();
             }
@@ -157,10 +173,10 @@ public class EditFrame extends javax.swing.JFrame {
                 Properties p = new Properties();
                 p.load(fr);
                 if (p.containsKey("IP") && p.containsKey("Port")) {
-                    ip=p.getProperty("IP");
-                    port=Integer.parseInt(p.getProperty("Port"));
+                    ip = p.getProperty("IP");
+                    port = Integer.parseInt(p.getProperty("Port"));
                 } else {
-                    ErrorFrame.main("Your Server-Settings were cleared because\nthey couldn't be read. Please restart\nyour client.",true);
+                    ErrorFrame.main("Your Server-Settings were cleared because\nthey couldn't be read. Please restart\nyour client.", true);
                 }
                 fr.close();
             }
@@ -177,6 +193,52 @@ public class EditFrame extends javax.swing.JFrame {
         updateIP();
         updatePC();
     }//GEN-LAST:event_startup
+
+    private void loadNewFold(javax.swing.event.TreeExpansionEvent evt)throws javax.swing.tree.ExpandVetoException {//GEN-FIRST:event_loadNewFold
+        DefaultMutableTreeNode selectedNode = ((DefaultMutableTreeNode) evt.getPath().getLastPathComponent());
+        if (selectedNode.getChildCount() == 1 && "Loading contents...".equals(selectedNode.getChildAt(0).toString())) {
+            int i = 0;
+            String dir = "";
+            TreeNode tp[] = selectedNode.getPath();
+            while (i < tp.length) {
+                if ("".equals(dir)) {
+                    dir = tp[i].toString();
+                } else {
+                    dir = dir + "/" + tp[i].toString();
+                }
+                i++;
+            }
+            System.out.println(dir);
+            Uploader u = new Uploader("ls", pc, dir, passwd, "");
+            u.start();
+            if (u.getResponse().startsWith("Error: ") || u.getResponse().startsWith("Exception: ")) {
+                ErrorFrame.main(u.getResponse(), false);
+            } else {
+                String in[] = u.getResponse().split("\n");
+                DefaultMutableTreeNode file;
+                selectedNode.removeAllChildren();
+                while (i < in.length) {
+                    if (in[i].startsWith("(dir)")) {
+                        in[i] = in[i].substring(5);
+                        file = new DefaultMutableTreeNode(in[i]);
+                        file.add(dirmsg);
+                        selectedNode.add(file);
+                    }
+                    System.out.println(in[i]);
+                    i++;
+                }
+                i = 0;
+                while (i < in.length) {
+                    if (in[i].startsWith("(file)")) {
+                        in[i] = in[i].substring(6);
+                        file = new DefaultMutableTreeNode(in[i]);
+                        selectedNode.add(file);
+                    }
+                    i++;
+                }
+            }
+        }
+    }//GEN-LAST:event_loadNewFold
 
     /**
      * @param args the command line arguments
