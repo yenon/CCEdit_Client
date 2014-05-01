@@ -3,8 +3,14 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package ccedit_client;
+
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.Properties;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
 
 /**
  *
@@ -38,6 +44,11 @@ public class EditFrame extends javax.swing.JFrame {
         jMenuItem1 = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowOpened(java.awt.event.WindowEvent evt) {
+                startup(evt);
+            }
+        });
 
         jSplitPane1.setDividerLocation(200);
 
@@ -89,14 +100,83 @@ public class EditFrame extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-    
-    public void updatePC(){
-        
+
+    private String pc, passwd, ip;
+    private int port;
+
+    public void updatePC() {
+        try {
+            if (new File(System.getProperty("user.home") + "/yenon/CCEdit_Client/Computer.cfg").isFile()) {
+                FileReader fr = new FileReader(new File(System.getProperty("user.home") + "/yenon/CCEdit_Client/Computer.cfg"));
+                Properties p = new Properties();
+                p.load(fr);
+                if (p.containsKey("ID") && p.containsKey("Password")) {
+                    pc=p.getProperty("ID");
+                    passwd=p.getProperty("Password");
+                    Uploader u = new Uploader("ls",pc,"",passwd,"");
+                    u.start();
+                    if(u.getResponse().startsWith("Error: ") || u.getResponse().startsWith("Exception: ")){
+                        ErrorFrame.main(u.getResponse(),false);
+                    }else{
+                        DefaultMutableTreeNode root = new DefaultMutableTreeNode("");
+                        DefaultMutableTreeNode dir;
+                        DefaultMutableTreeNode dirmsg = new DefaultMutableTreeNode("Loading contents...");
+                        System.out.println(u.getResponse());
+                        String in[] = u.getResponse().split("\n");
+                        int i=0;
+                        while(i<in.length){
+                            if(in[i].startsWith("(dir)")){
+                                in[i]=in[i].substring(5);
+                                dir = new DefaultMutableTreeNode(in[i]);
+                                dir.add(dirmsg);
+                                root.add(dir);
+                            }else{
+                                in[i]=in[i].substring(6);
+                                dir = new DefaultMutableTreeNode(in[i]);
+                                root.add(dir);
+                            }
+                            System.out.println(in[i]);
+                            i++;
+                        }
+                        jTree1.setModel(new DefaultTreeModel(root));
+                    }
+                }else{
+                    ErrorFrame.main("Please set your Computer-ID and password\nunder 'File/Set computer'.",false);
+                }
+                fr.close();
+            }
+        } catch (IOException ex) {
+            ExceptionHandler.handle(true, ex);
+        }
     }
-    
+
+    public void updateIP() {
+        try {
+            if (new File(System.getProperty("user.home") + "/yenon/CCEdit_Client/Server.cfg").isFile()) {
+                FileReader fr = new FileReader(new File(System.getProperty("user.home") + "/yenon/CCEdit_Client/Server.cfg"));
+                Properties p = new Properties();
+                p.load(fr);
+                if (p.containsKey("IP") && p.containsKey("Port")) {
+                    ip=p.getProperty("IP");
+                    port=Integer.parseInt(p.getProperty("Port"));
+                } else {
+                    ErrorFrame.main("Your Server-Settings were cleared because\nthey couldn't be read. Please restart\nyour client.",true);
+                }
+                fr.close();
+            }
+        } catch (IOException | NumberFormatException ex) {
+            ExceptionHandler.handle(true, ex);
+        }
+    }
+
     private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
         InputComputerdata.main(this);
     }//GEN-LAST:event_jMenuItem1ActionPerformed
+
+    private void startup(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_startup
+        updateIP();
+        updatePC();
+    }//GEN-LAST:event_startup
 
     /**
      * @param args the command line arguments
