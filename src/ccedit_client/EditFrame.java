@@ -12,7 +12,6 @@ import java.util.Properties;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
-import javax.swing.tree.TreePath;
 
 /**
  *
@@ -43,7 +42,11 @@ public class EditFrame extends javax.swing.JFrame {
         jTree1 = new javax.swing.JTree();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
+        jMenuItem4 = new javax.swing.JMenuItem();
+        jMenuItem3 = new javax.swing.JMenuItem();
+        jMenu2 = new javax.swing.JMenu();
         jMenuItem1 = new javax.swing.JMenuItem();
+        jMenuItem2 = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         addWindowListener(new java.awt.event.WindowAdapter() {
@@ -61,6 +64,11 @@ public class EditFrame extends javax.swing.JFrame {
         javax.swing.tree.DefaultMutableTreeNode treeNode1 = new javax.swing.tree.DefaultMutableTreeNode("root");
         jTree1.setModel(new javax.swing.tree.DefaultTreeModel(treeNode1));
         jTree1.setRootVisible(false);
+        jTree1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jTree1MouseClicked(evt);
+            }
+        });
         jTree1.addTreeWillExpandListener(new javax.swing.event.TreeWillExpandListener() {
             public void treeWillCollapse(javax.swing.event.TreeExpansionEvent evt)throws javax.swing.tree.ExpandVetoException {
             }
@@ -74,15 +82,46 @@ public class EditFrame extends javax.swing.JFrame {
 
         jMenu1.setText("File");
 
+        jMenuItem4.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_N, java.awt.event.InputEvent.CTRL_MASK));
+        jMenuItem4.setText("New");
+        jMenuItem4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem4ActionPerformed(evt);
+            }
+        });
+        jMenu1.add(jMenuItem4);
+
+        jMenuItem3.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S, java.awt.event.InputEvent.CTRL_MASK));
+        jMenuItem3.setText("Save");
+        jMenuItem3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem3ActionPerformed(evt);
+            }
+        });
+        jMenu1.add(jMenuItem3);
+
+        jMenuBar1.add(jMenu1);
+
+        jMenu2.setText("Computer");
+
         jMenuItem1.setText("Set computer");
         jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItem1ActionPerformed(evt);
             }
         });
-        jMenu1.add(jMenuItem1);
+        jMenu2.add(jMenuItem1);
 
-        jMenuBar1.add(jMenu1);
+        jMenuItem2.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F5, 0));
+        jMenuItem2.setText("Refresh");
+        jMenuItem2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem2ActionPerformed(evt);
+            }
+        });
+        jMenu2.add(jMenuItem2);
+
+        jMenuBar1.add(jMenu2);
 
         setJMenuBar(jMenuBar1);
 
@@ -109,7 +148,6 @@ public class EditFrame extends javax.swing.JFrame {
     private String pc, passwd, ip;
     private int port;
     private DefaultMutableTreeNode root;
-    private DefaultMutableTreeNode dirmsg = new DefaultMutableTreeNode("Loading contents...");
 
     public void updatePC() {
         try {
@@ -127,18 +165,20 @@ public class EditFrame extends javax.swing.JFrame {
                     } else {
                         root = new DefaultMutableTreeNode("");
                         DefaultMutableTreeNode dir;
-
+                        
                         System.out.println(u.getResponse());
+                        jTree1.setModel(null);
                         String in[] = u.getResponse().split("\n");
                         int i = 0;
                         while (i < in.length) {
                             if (in[i].startsWith("(dir)")) {
+                                System.out.println(in[i]);
                                 in[i] = in[i].substring(5);
                                 dir = new DefaultMutableTreeNode(in[i]);
-                                dir.add(dirmsg);
+                                dir.add(new DefaultMutableTreeNode("<empty directory>"));
                                 root.add(dir);
                             }
-                            System.out.println(in[i]);
+                            
                             i++;
                         }
                         i = 0;
@@ -218,7 +258,7 @@ public class EditFrame extends javax.swing.JFrame {
                     if (in[i].startsWith("(dir)")) {
                         in[i] = in[i].substring(5);
                         file = new DefaultMutableTreeNode(in[i]);
-                        file.add(dirmsg);
+                        file.add(new DefaultMutableTreeNode("<empty directory>"));
                         selectedNode.add(file);
                     }
                     System.out.println(in[i]);
@@ -233,12 +273,86 @@ public class EditFrame extends javax.swing.JFrame {
                     }
                     i++;
                 }
-                if (selectedNode.getChildCount()==0){
+                if (selectedNode.getChildCount() == 0) {
                     selectedNode.add(new DefaultMutableTreeNode("<empty directory>"));
                 }
             }
         }
     }//GEN-LAST:event_jTree1TreeWillExpand
+
+    private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
+        updatePC();
+    }//GEN-LAST:event_jMenuItem2ActionPerformed
+
+    private void jTree1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTree1MouseClicked
+        if (jTree1.getSelectionPath() != null) {
+            DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) jTree1.getSelectionPath().getLastPathComponent();
+            if (evt.getClickCount() == 2 && selectedNode.isLeaf() && !"<empty directory>".equals(selectedNode.toString())) {
+                int i = 0;
+                String dir = "";
+                TreeNode tp[] = selectedNode.getPath();
+                while (i < tp.length) {
+                    if ("".equals(dir)) {
+                        dir = tp[i].toString();
+                    } else {
+                        dir = dir + "/" + tp[i].toString();
+                    }
+                    i++;
+                }
+                Uploader u = new Uploader("get", pc, dir, passwd, "");
+                u.start();
+                if (u.getResponse().startsWith("Error: ") || u.getResponse().startsWith("Excpetion: ")) {
+                    ErrorFrame.main(u.getResponse(), false);
+                } else {
+                    jTextPane1.setText(u.getResponse());
+                }
+            }
+        }
+    }//GEN-LAST:event_jTree1MouseClicked
+
+    private void jMenuItem3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem3ActionPerformed
+        if (jTree1.getSelectionPath() != null) {
+            DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) jTree1.getSelectionPath().getLastPathComponent();
+            if (selectedNode.isLeaf() && !"<empty directory>".equals(selectedNode.toString())) {
+                int i = 0;
+                String dir = "";
+                TreeNode tp[] = selectedNode.getPath();
+                while (i < tp.length) {
+                    if ("".equals(dir)) {
+                        dir = tp[i].toString();
+                    } else {
+                        dir = dir + "/" + tp[i].toString();
+                    }
+                    i++;
+                }
+                Uploader u = new Uploader("put", pc, dir, passwd, jTextPane1.getText());
+                u.start();
+                if (u.getResponse().startsWith("Error: ") || u.getResponse().startsWith("Excpetion: ")) {
+                    ErrorFrame.main(u.getResponse(), false);
+                }
+            }
+        }
+    }//GEN-LAST:event_jMenuItem3ActionPerformed
+
+    private void jMenuItem4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem4ActionPerformed
+        if(jTree1.getSelectionPath()!=null){
+            DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) jTree1.getSelectionPath().getLastPathComponent();
+            int i = 0;
+                String dir = "";
+                TreeNode tp[] = selectedNode.getPath();
+                while (i < tp.length && !tp[i].isLeaf()) {
+                    if ("".equals(dir)) {
+                        dir = tp[i].toString();
+                    } else {
+                        dir = dir + "/" + tp[i].toString();
+                    }
+                    i++;
+                }
+            NewFileFrame.main(this,pc,passwd,dir);
+        }else{
+            NewFileFrame.main(this,pc,passwd,"");
+        }
+    }//GEN-LAST:event_jMenuItem4ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -278,8 +392,12 @@ public class EditFrame extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenu jMenu1;
+    private javax.swing.JMenu jMenu2;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItem1;
+    private javax.swing.JMenuItem jMenuItem2;
+    private javax.swing.JMenuItem jMenuItem3;
+    private javax.swing.JMenuItem jMenuItem4;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JSplitPane jSplitPane1;
