@@ -35,6 +35,7 @@ public class EditFrame extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        popupMenu1 = new java.awt.PopupMenu();
         jSplitPane1 = new javax.swing.JSplitPane();
         jScrollPane2 = new javax.swing.JScrollPane();
         jTextPane1 = new javax.swing.JTextPane();
@@ -48,6 +49,8 @@ public class EditFrame extends javax.swing.JFrame {
         jMenuItem1 = new javax.swing.JMenuItem();
         jMenuItem2 = new javax.swing.JMenuItem();
 
+        popupMenu1.setLabel("popupMenu1");
+
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowOpened(java.awt.event.WindowEvent evt) {
@@ -57,6 +60,7 @@ public class EditFrame extends javax.swing.JFrame {
 
         jSplitPane1.setDividerLocation(200);
 
+        jTextPane1.setFont(new java.awt.Font("Consolas", 0, 12)); // NOI18N
         jScrollPane2.setViewportView(jTextPane1);
 
         jSplitPane1.setRightComponent(jScrollPane2);
@@ -175,7 +179,7 @@ public class EditFrame extends javax.swing.JFrame {
                                 System.out.println(in[i]);
                                 in[i] = in[i].substring(5);
                                 dir = new DefaultMutableTreeNode(in[i]);
-                                dir.add(new DefaultMutableTreeNode("<empty directory>"));
+                                dir.add(new DefaultMutableTreeNode("Loading contents..."));
                                 root.add(dir);
                             }
                             
@@ -403,5 +407,6 @@ public class EditFrame extends javax.swing.JFrame {
     private javax.swing.JSplitPane jSplitPane1;
     private javax.swing.JTextPane jTextPane1;
     private javax.swing.JTree jTree1;
+    private java.awt.PopupMenu popupMenu1;
     // End of variables declaration//GEN-END:variables
 }
