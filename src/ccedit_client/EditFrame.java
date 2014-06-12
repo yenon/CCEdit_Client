@@ -220,7 +220,9 @@ public class EditFrame extends javax.swing.JFrame {
                 }
                 fr.close();
             }
-        } catch (IOException | NumberFormatException ex) {
+        } catch (IOException ex) {
+            ExceptionHandler.handle(true, ex);
+        } catch (NumberFormatException ex) {
             ExceptionHandler.handle(true, ex);
         }
     }
